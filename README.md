@@ -239,6 +239,7 @@ Audit records can also be persisted to `filetree`, `redis`, `firestore`, or `mem
 | `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | Optional default Manager Account (MCC) customer ID when accessing client accounts through a manager. |
 | `GOOGLE_ADS_MCP_TOOLS_CONFIG` | Optional path to a custom `tools_config.yaml` file. |
 | `PORT` | HTTP listen port when running in Streamable HTTP mode (default: `8080`). |
+| `HOST` | HTTP listen address in Streamable HTTP mode (default: `0.0.0.0`). Set `127.0.0.1` when a reverse proxy or tunnel on the same machine fronts the server. |
 | `GOOGLE_ADS_MCP_OAUTH_CLIENT_ID` | Google Cloud OAuth 2.0 Client ID. Setting both ID and Secret enables OAuth Proxy & Streamable HTTP mode. |
 | `GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET` | Google Cloud OAuth 2.0 Client Secret. |
 | `GOOGLE_ADS_MCP_BASE_URL` | Public base URL of the HTTP server (default: `http://localhost:8080`). |
