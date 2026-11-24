@@ -168,6 +168,7 @@ By default, tools are mounted with their category namespace prefix (`<namespace>
 | `assets_upload_video_asset` | `assets` | Mutate | Uploads a local video file to YouTube via a background task so it can be referenced by video assets (local `stdio` mode only). |
 | `labels_manage_labels` | `labels` | Mutate | Creates, updates, and removes account labels. |
 | `labels_manage_label_associations` | `labels` | Mutate | Creates and removes label associations on `CAMPAIGN`, `CUSTOMER`, `AD_GROUP`, and `AD_GROUP_CRITERION` resources. |
+| `googleads_mutate` | `googleads` | Mutate | Generic `GoogleAdsService.Mutate`: creates, updates, and removes any resources (budgets, bidding, campaign/ad group settings, ads, keywords, negatives, targeting, asset links) from REST-JSON `MutateOperation` payloads, atomically or with `partial_failure`. |
 
 ### Available Resources
 
@@ -184,7 +185,7 @@ By default, tools are mounted with their category namespace prefix (`<namespace>
 
 ### Propose & Confirm Safety Workflow
 
-All mutate tools (`assets_create_asset`, `assets_upload_video_asset`, `labels_manage_labels`, and `labels_manage_label_associations`) enforce a mandatory two-step safety workflow:
+All mutate tools (`assets_create_asset`, `assets_upload_video_asset`, `labels_manage_labels`, `labels_manage_label_associations`, and `googleads_mutate`) enforce a mandatory two-step safety workflow:
 
 1. **Propose (`validate_only=True`, default)**: Validates the operation (including a Google Ads API `validate_only` dry run where supported) without committing changes. Returns human-readable `change_items` and a cryptographic `checksum` bound to the `customer_id` and parameters.
 2. **Confirm (`validate_only=False`)**: After explicit user approval, pass the exact same parameters and `customer_id` along with the `checksum` from step 1. Missing or mismatched checksums are rejected before mutating the account.
@@ -218,6 +219,7 @@ namespaces:
   # Disable mutate categories for a strictly read-only deployment
   labels: false
   assets: false
+  googleads: false
 ```
 
 ### Tool Call Auditability

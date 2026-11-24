@@ -486,6 +486,98 @@
         "destructiveHint": true,
         "readOnlyHint": false
       },
+      "description": "Creates, updates, or removes any Google Ads resources in one request (GoogleAdsService.Mutate).\n\nUse this for changes the purpose-built tools don't cover: budgets, bidding\nstrategies, campaign and ad group settings and status, ads, keywords and\nnegative keywords, shared negative lists, location and other targeting\ncriteria, asset links (customer/campaign/ad group/asset group assets),\nconversion actions, and so on. Operations are applied atomically unless\n`partial_failure` is True.\n\nEach item of `operations` is a MutateOperation in Google Ads REST JSON\n(camelCase or snake_case field names), keyed by exactly one resource\noperation that holds `create`, `update` (plus `updateMask`), or `remove`.\nExamples:\n  {\"campaignBudgetOperation\": {\"update\": {\"resourceName\": \"customers/1234567890/campaignBudgets/111\", \"amountMicros\": \"35000000\"}, \"updateMask\": \"amountMicros\"}}\n  {\"campaignOperation\": {\"update\": {\"resourceName\": \"customers/1234567890/campaigns/222\", \"status\": \"PAUSED\"}, \"updateMask\": \"status\"}}\n  {\"adGroupCriterionOperation\": {\"create\": {\"adGroup\": \"customers/1234567890/adGroups/333\", \"keyword\": {\"text\": \"used cars\", \"matchType\": \"PHRASE\"}, \"status\": \"ENABLED\"}}}\n  {\"campaignCriterionOperation\": {\"create\": {\"campaign\": \"customers/1234567890/campaigns/222\", \"negative\": true, \"keyword\": {\"text\": \"free\", \"matchType\": \"BROAD\"}}}}\n  {\"adGroupAdOperation\": {\"remove\": \"customers/1234567890/adGroupAds/333~444\"}}\nMoney values are in micros (1,000,000 = 1 unit of account currency) and\nint64 values may be given as strings. `updateMask` is a comma-separated\nlist of camelCase field paths. Temporary IDs (negative numbers in resource\nnames, e.g. 'customers/1234567890/campaignBudgets/-1') let new resources\nreference each other within one request.\n\nPropose & Confirm Workflow (`validate_only` and `checksum`):\n1. Call `mutate` with `validate_only=True` (the default). The Google Ads API\n   validates the request without applying it, and the tool returns\n   structured `change_items` and a `checksum`.\n2. Present the `change_items` to the user and wait for explicit user approval.\n3. Only after user confirmation, call `mutate` with `validate_only=False`\n   along with the exact same parameters and the `checksum` returned by the\n   previous `validate_only=True` call.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Checksum of the validated request returned by a prior `validate_only=True` call. Required when `validate_only=False`."
+          },
+          "customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "description": "Google Ads Customer ID (digits or hyphenated, e.g. '1234567890')."
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional manager customer ID to use as the login-customer-id header."
+          },
+          "operations": {
+            "description": "MutateOperation objects in REST JSON form (1 to 1000).",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "partial_failure": {
+            "default": false,
+            "description": "If True, valid operations are applied even if others fail. Default False (all or nothing).",
+            "type": "boolean"
+          },
+          "validate_only": {
+            "default": true,
+            "description": "If True (default), validates the request and returns proposed `change_items` and a `checksum` without changing the account. If False, requires `checksum` from a prior `validate_only=True` call to commit the mutation.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "customer_id",
+          "operations"
+        ],
+        "type": "object"
+      },
+      "name": "googleads_mutate",
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "x-fastmcp-wrap-result": true
+      },
+      "title": "Googleads Mutate"
+    },
+    {
+      "_meta": {
+        "fastmcp": {
+          "tags": []
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "readOnlyHint": false
+      },
       "description": "Manages associations between labels and Campaign, Customer, Ad Group, or Ad Group Criterion.\n\nSupports CREATE and REMOVE operations.\n\nPropose & Confirm Workflow (`validate_only` and `checksum`):\n1. Call `manage_label_associations` with `validate_only=True` (the default). After validation passes, the tool returns structured `change_items` and a `checksum` without committing changes.\n2. Present the `change_items` to the user and wait for explicit user approval.\n3. Only after user confirmation, call `manage_label_associations` with `validate_only=False` along with the exact same parameters and the `checksum` returned by the previous `validate_only=True` call.",
       "inputSchema": {
         "additionalProperties": false,
