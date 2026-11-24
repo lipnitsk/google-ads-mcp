@@ -36,6 +36,7 @@ class TestToolsMounting(unittest.IsolatedAsyncioTestCase):
                     "metadata": True,
                     "labels": True,
                     "assets": True,
+                    "googleads": True,
                 }
             }
         )
@@ -54,6 +55,7 @@ class TestToolsMounting(unittest.IsolatedAsyncioTestCase):
         self.assertIn("labels_manage_label_associations", tool_names)
         self.assertIn("assets_create_asset", tool_names)
         self.assertIn("assets_upload_video_asset", tool_names)
+        self.assertIn("googleads_mutate", tool_names)
 
     @patch("ads_mcp.config.ToolsConfig.load")
     async def test_mounting_disabled_namespaces(self, mock_load):
