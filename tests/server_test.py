@@ -52,6 +52,22 @@ class TestUtils(unittest.TestCase):
             uvicorn_config={"access_log": False},
         )
 
+    def test_oauth_server_honors_host(self):
+        """HOST lets a same-machine reverse proxy keep the port off the network."""
+        from ads_mcp import server
+
+        env = {
+            "GOOGLE_ADS_MCP_OAUTH_CLIENT_ID": "test-client",
+            "GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET": "test-secret",
+            "HOST": "127.0.0.1",
+        }
+        with patch.dict(server.os.environ, env, clear=True):
+            with patch.object(server.mcp, "run") as run:
+                server.run_server()
+
+        self.assertEqual(run.call_args.kwargs["host"], "127.0.0.1")
+        self.assertEqual(run.call_args.kwargs["port"], 8080)
+
     def test_oauth_access_token_not_logged(self):
         """Tests that OAuth access token is not logged."""
         import asyncio

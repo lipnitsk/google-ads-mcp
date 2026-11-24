@@ -35,12 +35,15 @@ def run_server() -> None:
     _CLIENT_ID = os.environ.get("GOOGLE_ADS_MCP_OAUTH_CLIENT_ID")
     _CLIENT_SECRET = os.environ.get("GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET")
     port = int(os.environ.get("PORT", "8080"))
+    # 0.0.0.0 suits containers; set HOST=127.0.0.1 when a reverse proxy or
+    # tunnel on the same machine fronts the server.
+    host = os.environ.get("HOST") or "0.0.0.0"
 
     if _CLIENT_ID and _CLIENT_SECRET:
         mcp.run(
             transport="streamable-http",
             port=port,
-            host="0.0.0.0",
+            host=host,
             uvicorn_config={"access_log": False},
         )
     else:
