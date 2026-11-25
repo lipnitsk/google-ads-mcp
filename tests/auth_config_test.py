@@ -219,6 +219,48 @@ class TestAuthConfig(unittest.TestCase):
         self.assertIn("client_storage", kwargs)
         self.assertIsInstance(kwargs["client_storage"], FernetEncryptionWrapper)
 
+    @patch("fastmcp.server.auth.providers.google.GoogleProvider")
+    def test_coordinator_skips_tasks_extension_in_remote_mode(
+        self, mock_provider
+    ):
+        """Remote OAuth mode registers no TasksExtension, so no Docket worker polls."""
+        os.environ["GOOGLE_ADS_MCP_OAUTH_CLIENT_ID"] = "dummy_client_id"
+        os.environ["GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET"] = "dummy_client_secret"
+        os.environ["GOOGLE_ADS_MCP_STORAGE_TYPE"] = "memory"
+
+        import importlib
+        import ads_mcp.coordinator as coord
+        from fastmcp_tasks import TasksExtension
+
+        self.addCleanup(lambda: importlib.reload(coord))
+        importlib.reload(coord)
+
+        self.assertFalse(
+            any(
+                isinstance(ext, TasksExtension)
+                for ext in coord.mcp._extensions.values()
+            )
+        )
+
+    def test_coordinator_registers_tasks_extension_in_stdio_mode(self):
+        """Local stdio mode keeps TasksExtension for the background video upload."""
+        os.environ.pop("GOOGLE_ADS_MCP_OAUTH_CLIENT_ID", None)
+        os.environ.pop("GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET", None)
+
+        import importlib
+        import ads_mcp.coordinator as coord
+        from fastmcp_tasks import TasksExtension
+
+        self.addCleanup(lambda: importlib.reload(coord))
+        importlib.reload(coord)
+
+        self.assertTrue(
+            any(
+                isinstance(ext, TasksExtension)
+                for ext in coord.mcp._extensions.values()
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

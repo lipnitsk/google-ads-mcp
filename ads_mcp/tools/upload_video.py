@@ -50,8 +50,10 @@ class VideoPrivacy(str, Enum):
     PRIVATE = "PRIVATE"
 
 
+# Remote OAuth mode registers no TasksExtension (see coordinator), so the tool
+# stays a plain call there and refuses with a clear error.
 @assets_mcp.tool(
-    task=True,
+    task=not utils.is_remote_oauth_mode(),
     annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False),
 )
 async def upload_video_asset(

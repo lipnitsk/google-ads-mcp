@@ -61,7 +61,11 @@ if _CLIENT_ID and _CLIENT_SECRET:
 else:
     mcp = FastMCP("Google Ads Server")
 
-mcp.add_extension(TasksExtension())
+# Background tasks back only assets_upload_video_asset, which reads a local
+# file and is refused in remote OAuth mode. The Docket worker behind the
+# extension polls its queue continuously, so skip it where no task can run.
+if not (_CLIENT_ID and _CLIENT_SECRET):
+    mcp.add_extension(TasksExtension())
 mcp.add_middleware(
     AuditMiddleware(
         storage=create_audit_storage(),
